@@ -39,7 +39,11 @@ jobs:
             git add .
             git commit -m "Auto-resolve: use Codeberg version"
           fi
-      
+      - name: Push to GitHub
+        run: |
+          git pull origin main --rebase
+          git push origin main
+
       - name: Push to GitHub
         run: |
           git push origin main
