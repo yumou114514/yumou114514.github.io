@@ -1,11 +1,45 @@
-name: Sync
-on: workflow_dispatch
+name: Sync from Codeberg
+
+on:
+  workflow_dispatch
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
     steps:
-    - uses: actions/checkout@v4
-    - run: |
-        git pull https://codeberg.org/yumou/huh114514.github.io.git main --allow-unrelated-histories
-        git push
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: Pull from Codeberg
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 添加 Codeberg 作为远程仓库
+          git remote add codeberg https://codeberg.org/yumou/huh114514.github.io.git
+          
+          # 拉取 Codeberg 的 main 分支
+          git fetch codeberg main
+          
+          # 合并（允许无关历史）
+          git merge codeberg/main --allow-unrelated-histories --no-edit || true
+          
+          # 如果有冲突，强制使用 Codeberg 的版本
+          if git diff --cached --quiet; then
+            echo "No conflicts"
+          else
+            echo "Conflicts detected, resolving by preferring Codeberg version"
+            git checkout --theirs .
+            git add .
+            git commit -m "Auto-resolve: use Codeberg version"
+          fi
+      
+      - name: Push to GitHub
+        run: |
+          git push origin main
