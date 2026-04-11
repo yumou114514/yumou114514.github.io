@@ -12,32 +12,32 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
-        
+
         body {
             background-color: #f5f7fa;
             color: #333;
             line-height: 1.5;
             padding: 12px;
             margin: 0;
-            width: 100vw; /* 视口宽度 */
-            height: 100vh; /* 视口高度 */
+            width: 100vw;
+            height: 100vh;
             max-width: 100vw;
             max-height: 100vh;
-            overflow: hidden; /* 禁止整个页面滚动 */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
-        
+
         header {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #0c2e4e 0%, #1a4d8c 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-radius: 8px 8px 0 0;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 10px;
-            flex-shrink: 0; /* 防止被压缩 */
+            flex-shrink: 0;
         }
-        
+
         h1 {
             font-size: 1.4rem;
             margin-bottom: 6px;
@@ -45,12 +45,83 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .subtitle {
-            font-size: 0.85rem;
-            opacity: 0.9;
+            font-size: 0.8rem;
+            opacity: 0.85;
         }
-        
+
+        .api-panel {
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.8rem;
+        }
+
+        .api-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 10px;
+            border-radius: 40px;
+            transition: 0.2s;
+        }
+
+        .api-option.selected {
+            background: #ffd966;
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .api-option input {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .user-key-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .user-key-input input {
+            flex: 1;
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 0.75rem;
+            background: #f0f2f5;
+        }
+
+        .user-key-input button {
+            background: #ffc107;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 12px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .key-status {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
         .chat-container {
             background-color: white;
             border-radius: 0 0 8px 8px;
@@ -60,7 +131,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .chat-history {
             flex-grow: 1;
             overflow-y: auto;
@@ -70,43 +141,62 @@
             gap: 12px;
             min-height: 0;
         }
-        
+
         .message {
             max-width: 85%;
             padding: 10px 14px;
             border-radius: 16px;
             word-wrap: break-word;
             font-size: 0.95rem;
+            animation: fadeIn 0.2s ease;
         }
-        
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .user-message {
             align-self: flex-end;
             background-color: #007bff;
             color: white;
             border-bottom-right-radius: 2px;
         }
-        
+
         .ai-message {
             align-self: flex-start;
             background-color: #f1f3f4;
             color: #333;
             border-bottom-left-radius: 2px;
         }
-        
+
+        .error-message {
+            align-self: flex-start;
+            background-color: #fee2e2;
+            color: #c62828;
+            border-left: 3px solid #c62828;
+        }
+
         .message-header {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: bold;
             margin-bottom: 4px;
             opacity: 0.8;
         }
-        
+
         .input-area {
             display: flex;
             border-top: 1px solid #eee;
             padding: 15px;
             background-color: #f9f9f9;
         }
-        
+
         #user-input {
             flex-grow: 1;
             padding: 10px 14px;
@@ -116,11 +206,11 @@
             outline: none;
             transition: border 0.2s;
         }
-        
+
         #user-input:focus {
             border-color: #007bff;
         }
-        
+
         #send-btn {
             background-color: #007bff;
             color: white;
@@ -136,11 +226,16 @@
             transition: background-color 0.2s;
             font-size: 0.9rem;
         }
-        
-        #send-btn:hover {
+
+        #send-btn:hover:not(:disabled) {
             background-color: #0056b3;
         }
-        
+
+        #send-btn:disabled {
+            background-color: #a0c4ff;
+            cursor: not-allowed;
+        }
+
         .typing-indicator {
             display: none;
             align-self: flex-start;
@@ -152,12 +247,12 @@
             margin-left: 15px;
             margin-bottom: 5px;
         }
-        
+
         .typing-dots {
             display: flex;
             align-items: center;
         }
-        
+
         .typing-dots span {
             height: 6px;
             width: 6px;
@@ -167,28 +262,44 @@
             margin: 0 1.5px;
             animation: typing 1.4s infinite both;
         }
-        
-        .typing-dots span:nth-child(1) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(2) { animation-delay: 0.4s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.6s; }
-        
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-4px); }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: 0.2s;
         }
-        
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-4px);
+            }
+        }
+
         .ai-icon {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: #4a00e0;
-            color: white;
+            background-color: #ffb347;
+            color: #1e3c72;
             width: 28px;
             height: 28px;
             border-radius: 50%;
             font-size: 0.85rem;
         }
-        
+
         .no-messages {
             text-align: center;
             color: #999;
@@ -196,37 +307,41 @@
             margin: auto;
             font-size: 0.9rem;
         }
-        
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 8px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            margin: 6px 0;
+        }
+
+        code {
+            font-family: monospace;
+            background: #e8e8e8;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 8px;
             }
-            
-            header {
-                padding: 12px 15px;
-                margin-bottom: 12px;
+
+            .api-panel {
+                flex-direction: column;
+                align-items: stretch;
             }
-            
-            h1 {
-                font-size: 1.2rem;
+
+            .user-key-input {
+                width: 100%;
             }
-            
-            .subtitle {
-                font-size: 0.8rem;
-            }
-            
-            .chat-history {
-                padding: 12px;
-            }
-            
+
             .message {
                 max-width: 90%;
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-            
-            .input-area {
-                padding: 12px;
             }
         }
     </style>
@@ -234,102 +349,400 @@
 
 <body>
     <header>
-        <h1><span class="ai-icon">AI</span>AI聊天</h1>
-        <p class="subtitle">与AI助手对话</p>
+        <h1><span class="ai-icon">🔑</span> AI聊天</h1>
+        <div class="api-panel" id="api-panel">
+            <label class="api-option" id="opt-builtin">
+                <input type="radio" name="apiMode" value="builtin" checked> 🔐 使用内置演示Key (限流/测试)
+            </label>
+            <label class="api-option" id="opt-custom">
+                <input type="radio" name="apiMode" value="custom"> ✏️ 使用我自己的API Key
+            </label>
+            <div class="user-key-input" id="user-key-area" style="display: none;">
+                <input type="password" id="custom-api-key" placeholder="sk-xxxxxxxxxxxxxxxx" autocomplete="off">
+                <button id="save-key-btn">保存并生效</button>
+            </div>
+            <div class="key-status" id="key-status-text">⚙️ 未激活</div>
+        </div>
     </header>
 
     <div class="chat-container">
         <div class="chat-history" id="chat-history">
-            <div class="no-messages" id="no-messages">开始对话吧！</div>
+            <div class="no-messages" id="no-messages">💬 选择API模式后即可开始对话<br>🔹 内置Key仅供体验，建议自备Key</div>
         </div>
         <div class="typing-indicator" id="typing-indicator">
             <div class="typing-dots"><span></span><span></span><span></span></div>
         </div>
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="请输入消息..." autocomplete="off" autofocus>
+            <input type="text" id="user-input" placeholder="输入消息，按 Enter 发送..." autocomplete="off" autofocus>
             <button id="send-btn">发送</button>
         </div>
     </div>
 
     <script>
-        // 简单AI回复逻辑
-        function getAIResponse(userInput) {
-            const input = userInput.trim().toLowerCase();
-            
-            const responses = [
-                "？",
-                "请输入文本",
-                "已回答，立即查看->"
-            ];
-            
-            return responses[Math.floor(Math.random() * responses.length)];
+        // ======================== 开源配置 ========================
+        // 内置演示 Key (仅用于测试，有速率限制，建议用户替换为自己的Key)
+        // 注意：此 Key 为公开演示用途，实际项目请勿依赖，建议用户自行填入自己的Key
+        const BUILTIN_DEMO_KEY = 'sk-demo-deepseek-public-limited-do-not-use-in-production';
+        // 真实的 DeepSeek API 端点
+        const API_URL = 'https://api.deepseek.com/v1/chat/completions';
+        const MODEL_NAME = 'deepseek-chat';
+
+        // 全局状态
+        let currentApiKey = '';           // 当前实际使用的key
+        let apiMode = 'builtin';           // 'builtin' 或 'custom'
+        let isWaitingResponse = false;
+        let conversationHistory = [];       // 存储对话上下文 [{role, content}]
+
+        // 系统提示词
+        const SYSTEM_PROMPT = {
+            role: 'system',
+            content: '你是 DeepSeek AI 助手，由深度求索公司创造。请用友好、专业、清晰的中文回答问题，帮助用户解决疑问。'
+        };
+
+        // DOM 元素
+        const chatHistoryDiv = document.getElementById('chat-history');
+        const noMessagesDiv = document.getElementById('no-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const keyStatusSpan = document.getElementById('key-status-text');
+        const optBuiltin = document.getElementById('opt-builtin');
+        const optCustom = document.getElementById('opt-custom');
+        const userKeyArea = document.getElementById('user-key-area');
+        const customKeyInput = document.getElementById('custom-api-key');
+        const saveKeyBtn = document.getElementById('save-key-btn');
+
+        // ======================== 辅助函数 ========================
+        function logDebug(...args) {
+            if (true) console.log('[DeepSeek]', ...args);
         }
-        
-        // 添加消息到聊天界面
-        function addMessageToChat(sender, message) {
-            const chatHistory = document.getElementById('chat-history');
-            const noMessages = document.getElementById('no-messages');
-            
-            if (noMessages && noMessages.style.display !== 'none') {
-                noMessages.style.display = 'none';
+
+        // 更新状态栏显示
+        function updateKeyStatus(message, isError = false) {
+            keyStatusSpan.textContent = message;
+            keyStatusSpan.style.backgroundColor = isError ? '#d32f2f' : 'rgba(0,0,0,0.6)';
+            keyStatusSpan.style.color = 'white';
+        }
+
+        // 移除无消息占位
+        function removePlaceholder() {
+            if (noMessagesDiv && noMessagesDiv.style.display !== 'none') {
+                noMessagesDiv.style.display = 'none';
             }
-            
+        }
+
+        // 添加消息到聊天区 (sender: user / ai / system)
+        function addMessageToChat(sender, message, isError = false) {
+            removePlaceholder();
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            
-            const messageHeader = document.createElement('div');
-            messageHeader.className = 'message-header';
-            messageHeader.textContent = sender === 'user' ? '您' : 'AI助手';
-            
-            const messageContent = document.createElement('div');
-            messageContent.textContent = message;
-            
-            messageDiv.appendChild(messageHeader);
-            messageDiv.appendChild(messageContent);
-            
-            chatHistory.appendChild(messageDiv);
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-            
+            if (isError) {
+                messageDiv.className = 'message error-message';
+            } else {
+                messageDiv.className = `message ${sender}-message`;
+            }
+
+            const header = document.createElement('div');
+            header.className = 'message-header';
+            if (sender === 'user') header.textContent = '您';
+            else if (sender === 'ai') header.textContent = 'DeepSeek AI';
+            else header.textContent = '系统提示';
+
+            const contentDiv = document.createElement('div');
+            if (sender === 'ai' && !isError) {
+                // 支持换行和简易代码块
+                let formatted = escapeHtml(message).replace(/\n/g, '<br>');
+                formatted = formatted.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+                contentDiv.innerHTML = formatted;
+            } else {
+                contentDiv.textContent = message;
+            }
+
+            messageDiv.appendChild(header);
+            messageDiv.appendChild(contentDiv);
+            chatHistoryDiv.appendChild(messageDiv);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
             return messageDiv;
         }
-        
-        // 处理用户输入
-        function handleUserInput() {
-            const userInput = document.getElementById('user-input');
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // 重置对话历史 (不清除界面消息，仅重置数组，可附加系统提示)
+        function resetConversationHistory() {
+            conversationHistory = [];
+            logDebug('对话历史已重置');
+        }
+
+        // 获取当前有效的API Key (根据模式)
+        function getEffectiveApiKey() {
+            if (apiMode === 'builtin') {
+                return BUILTIN_DEMO_KEY;
+            } else {
+                // 用户自定义模式
+                const userKey = customKeyInput.value.trim();
+                return userKey || '';
+            }
+        }
+
+        // 验证Key格式 (简单校验)
+        function isKeyValid(key) {
+            if (!key) return false;
+            if (apiMode === 'builtin') return true; // 演示模式即使key是demo也可
+            // 自定义模式需要至少看起来像sk-开头且长度大于10
+            return (key.startsWith('sk-') && key.length > 15) || key.length > 20;
+        }
+
+        // 刷新API状态UI
+        function refreshApiStatus() {
+            const key = getEffectiveApiKey();
+            if (apiMode === 'builtin') {
+                updateKeyStatus('🔑 内置演示模式 (有限速)');
+                // 如果有演示警告
+                if (!noMessagesDiv || noMessagesDiv.style.display === 'none') {
+                    // 无需重复添加，但可以简单显示在状态栏
+                }
+            } else {
+                if (key && key.length > 5) {
+                    updateKeyStatus(`✅ 用户自定义Key (${key.slice(0, 8)}...)`);
+                } else {
+                    updateKeyStatus('⚠️ 未填写自定义Key，请输入有效的DeepSeek Key', true);
+                }
+            }
+        }
+
+        // 保存用户Key并切换到自定义模式
+        function applyCustomKey() {
+            const newKey = customKeyInput.value.trim();
+            if (!newKey) {
+                updateKeyStatus('❌ 请输入API Key再保存', true);
+                return false;
+            }
+            if (!newKey.startsWith('sk-') && newKey.length < 20) {
+                updateKeyStatus('⚠️ Key格式可疑，DeepSeek Key一般以sk-开头', true);
+                // 仍然允许尝试，但不强制报错
+            }
+            // 切换到自定义模式
+            document.querySelector('input[value="custom"]').checked = true;
+            apiMode = 'custom';
+            // 重新读取生效
+            currentApiKey = newKey;
+            // 存储到localStorage? (可选，增加用户体验，但不强制，完全开源)
+            try {
+                localStorage.setItem('deepseek_user_key', newKey);
+            } catch (e) { }
+            refreshApiStatus();
+            // 显示成功消息
+            addMessageToChat('system', '🔑 已切换至您的API Key，后续对话将使用您自己的密钥。', false);
+            return true;
+        }
+
+        // 加载本地存储的自定义Key
+        function loadStoredKey() {
+            try {
+                const saved = localStorage.getItem('deepseek_user_key');
+                if (saved && saved.trim()) {
+                    customKeyInput.value = saved;
+                    // 如果当前是自定义模式，自动激活
+                    if (apiMode === 'custom') {
+                        refreshApiStatus();
+                    }
+                }
+            } catch (e) { }
+        }
+
+        // 调用 DeepSeek API (真实)
+        async function callDeepSeekAPI(userMessage) {
+            const activeKey = getEffectiveApiKey();
+            if (!activeKey || activeKey === 'sk-demo-deepseek-public-limited-do-not-use-in-production') {
+                // 如果是内置演示key且未替换为有效key，给出更友好提示
+                if (apiMode === 'builtin') {
+                    throw new Error('当前使用的是公开演示Key，可能已被限流或失效。请切换到“使用我自己的API Key”并填入有效的DeepSeek Key。');
+                } else {
+                    throw new Error('API Key 无效，请检查您的DeepSeek Key是否正确填写。');
+                }
+            }
+
+            // 将用户消息加入历史
+            conversationHistory.push({ role: 'user', content: userMessage });
+            const messages = [SYSTEM_PROMPT, ...conversationHistory];
+
+            const requestBody = {
+                model: MODEL_NAME,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 2048,
+                stream: false
+            };
+
+            logDebug('发送请求，模型:', MODEL_NAME);
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${activeKey}`
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                let errorDetail = `HTTP ${response.status}`;
+                try {
+                    const errData = await response.json();
+                    errorDetail = errData.error?.message || JSON.stringify(errData);
+                } catch (e) { }
+                throw new Error(`${response.status}: ${errorDetail}`);
+            }
+
+            const data = await response.json();
+            if (!data.choices || data.choices.length === 0) {
+                throw new Error('API响应格式错误');
+            }
+            const aiReply = data.choices[0].message.content;
+            conversationHistory.push({ role: 'assistant', content: aiReply });
+
+            // 限制历史长度 (保留最近12条消息，避免token过长)
+            if (conversationHistory.length > 16) {
+                conversationHistory = conversationHistory.slice(-14);
+            }
+            return aiReply;
+        }
+
+        // 核心发送逻辑
+        async function handleSendMessage() {
+            if (isWaitingResponse) {
+                return;
+            }
             const message = userInput.value.trim();
-            
             if (!message) {
                 userInput.focus();
                 return;
             }
-            
+
+            // 验证当前key是否有效
+            const currentKey = getEffectiveApiKey();
+            if (!currentKey || (apiMode === 'custom' && !currentKey.startsWith('sk-') && currentKey.length < 15)) {
+                let errMsg = '请先配置API Key: ';
+                if (apiMode === 'custom') {
+                    errMsg += '在下方输入框填写您的DeepSeek Key并点击"保存并生效"。';
+                } else {
+                    errMsg += '内置演示Key不可用，建议切换到自定义模式并填入您自己的Key (免费获取: platform.deepseek.com)。';
+                }
+                addMessageToChat('system', errMsg, true);
+                return;
+            }
+
+            // 演示模式特殊提示
+            if (apiMode === 'builtin' && currentKey === BUILTIN_DEMO_KEY) {
+                addMessageToChat('system', '🧪 当前使用公开测试Key，可能响应较慢或受限。如需稳定体验，请切换至“自定义Key”并填入您的密钥。', false);
+            }
+
+            // 禁用UI
+            sendBtn.disabled = true;
+            isWaitingResponse = true;
             addMessageToChat('user', message);
-            
-            const typingIndicator = document.getElementById('typing-indicator');
-            typingIndicator.style.display = 'block';
-            
             userInput.value = '';
-            
-            setTimeout(() => {
-                const aiResponse = getAIResponse(message);
+            typingIndicator.style.display = 'block';
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+
+            try {
+                const aiResponse = await callDeepSeekAPI(message);
                 typingIndicator.style.display = 'none';
                 addMessageToChat('ai', aiResponse);
-            }, 800);
+                refreshApiStatus();
+            } catch (error) {
+                console.error(error);
+                typingIndicator.style.display = 'none';
+                let userFriendlyError = `请求失败: ${error.message}`;
+                if (error.message.includes('401') || error.message.includes('Authentication')) {
+                    userFriendlyError = '🔐 API Key 认证失败，请检查Key是否正确 (自定义模式需要有效的DeepSeek Key)';
+                    if (apiMode === 'builtin') userFriendlyError += '。内置Key可能已过期，请切换自定义模式。';
+                } else if (error.message.includes('429')) {
+                    userFriendlyError = '⏱️ 请求频率超限 (Rate Limit)，请稍后再试，或使用自己的Key获得更高限制。';
+                } else if (error.message.includes('fetch')) {
+                    userFriendlyError = '🌐 网络错误，无法连接DeepSeek API。请检查网络或确保CORS支持 (DeepSeek官方支持跨域)。';
+                }
+                addMessageToChat('ai', `❌ ${userFriendlyError}`, true);
+                refreshApiStatus();
+            } finally {
+                sendBtn.disabled = false;
+                isWaitingResponse = false;
+                userInput.focus();
+                chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+            }
         }
-        
-        // 初始化页面
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('send-btn').addEventListener('click', handleUserInput);
-            
-            document.getElementById('user-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    handleUserInput();
+
+        // 切换模式事件
+        function switchApiMode(mode) {
+            apiMode = mode;
+            if (mode === 'builtin') {
+                userKeyArea.style.display = 'none';
+                refreshApiStatus();
+                // 可选提示
+                addMessageToChat('system', '已切换至内置演示模式 (Key公开，有速率限制，建议注册自己的Key)', false);
+            } else {
+                userKeyArea.style.display = 'flex';
+                refreshApiStatus();
+                // 检查是否已有key
+                const existing = customKeyInput.value.trim();
+                if (!existing) {
+                    updateKeyStatus('✏️ 请输入您的DeepSeek Key并保存', false);
+                } else {
+                    updateKeyStatus(`⚡ 自定义Key待生效，点击保存`, false);
+                }
+            }
+            // 重置对话历史（可选，保证不同模式的上下文隔离）
+            resetConversationHistory();
+        }
+
+        // 初始化事件绑定与本地存储加载
+        function init() {
+            // 加载本地存储key
+            loadStoredKey();
+
+            // 单选框监听
+            optBuiltin.addEventListener('click', () => {
+                if (optBuiltin.querySelector('input').checked) switchApiMode('builtin');
+            });
+            optCustom.addEventListener('click', () => {
+                if (optCustom.querySelector('input').checked) switchApiMode('custom');
+            });
+            saveKeyBtn.addEventListener('click', () => {
+                if (applyCustomKey()) {
+                    // 确保单选框选中自定义模式
+                    optCustom.querySelector('input').checked = true;
+                    switchApiMode('custom');
                 }
             });
-            
-            const userInput = document.getElementById('user-input');
+            sendBtn.addEventListener('click', handleSendMessage);
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !isWaitingResponse) {
+                    e.preventDefault();
+                    handleSendMessage();
+                }
+            });
+
+            // 初始默认模式: builtin, 但如果本地存储有key并且用户想用自定义，默认不强制，但显示一下
+            if (customKeyInput.value.trim()) {
+                // 有保存的key就提示一下但保持内置模式，让用户手动切换
+                updateKeyStatus('检测到已保存的Key，可切换至自定义模式', false);
+            } else {
+                refreshApiStatus();
+            }
+            // 初始化欢迎说明
+            if (noMessagesDiv) {
+                noMessagesDiv.innerHTML = '💬 选择API模式后即可开始对话<br>🔹 内置Key仅供体验，建议自备Key (获取: platform.deepseek.com)';
+            }
+            resetConversationHistory();
             userInput.focus();
-        });
+        }
+
+        init();
     </script>
 </body>
 
