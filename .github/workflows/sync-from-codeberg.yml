@@ -20,9 +20,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
           # 重新设置 origin 的 URL，强制使用 PAT
-          git remote set-url origin https://${{ secrets.PAT }}@github.com/huh114514/huh114514.github.io.git
+          git remote set-url origin https://${{ secrets.PAT }}@github.com/yumou114514/yumou114514.github.io.git
           
-          git remote add codeberg https://codeberg.org/yumou/huh114514.github.io.git
+          git remote add codeberg https://codeberg.org/yumou/yumou114514.github.io.git
           git fetch codeberg main
           git merge codeberg/main --allow-unrelated-histories --no-edit || true
           
