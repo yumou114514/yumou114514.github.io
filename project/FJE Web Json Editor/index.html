@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>全画幅·JSON编辑器</title>
+  <style>
+    /* 彻底消灭所有留白 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;  /* 禁止滚动条导致的偏移 */
+      background-color: #1e1e1e;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+    }
+    /* 工具条：极简，不占空间 */
+    .toolbar {
+      display: flex;
+      gap: 1px;
+      background-color: #252526;
+      padding: 4px 8px;
+      border-bottom: 1px solid #3e3e3e;
+      flex-shrink: 0;
+    }
+    .toolbar button {
+      background: #2d2d2d;
+      border: none;
+      color: #cccccc;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    .toolbar button:hover {
+      background: #3e3e3e;
+      color: white;
+    }
+    /* 核心：编辑区吞噬所有剩余高度 */
+    .editor-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      min-height: 0;  /* flex限制溢出 */
+    }
+    /* 真正的全屏编辑区，没有任何padding/margin浪费 */
+    #jsonEditor {
+      width: 100%;
+      height: 100%;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: none;
+      padding: 16px;  /* 这里加一点内边距是为了阅读舒适，如果你想要完全顶到头，改成0 */
+      tab-size: 2;
+    }
+    /* 状态栏：极简，只占一行 */
+    .status-bar {
+      background: #007acc;
+      color: white;
+      padding: 4px 12px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="formatJSON()">✨ 格式化</button>
+    <button onclick="compressJSON()">🗜️ 压缩</button>
+    <button onclick="validateJSON()">✅ 校验</button>
+    <span style="color:#888; margin-left:auto; font-size:12px; align-self:center;">全屏·零浪费</span>
+  </div>
+
+  <div class="editor-container">
+    <textarea id="jsonEditor" spellcheck="false" placeholder="在这里粘贴或编辑 JSON...">{
+  "name": "全画幅编辑器",
+  "purpose": "吞噬每一像素",
+  "screen": "100%",
+  "example": ["无留白", "无侧边栏", "无广告"],
+  "note": "F11 全屏后，这就是IDE"
+}</textarea>
+  </div>
+
+  <div class="status-bar">
+    <span id="cursorPos">行 1, 列 1</span>
+    <span id="jsonStatus">✅ JSON 有效</span>
+  </div>
+
+  <script>
+    const editor = document.getElementById('jsonEditor');
+    const cursorPos = document.getElementById('cursorPos');
+    const jsonStatus = document.getElementById('jsonStatus');
+
+    // 实时行号/列号
+    editor.addEventListener('keyup', updateCursor);
+    editor.addEventListener('click', updateCursor);
+    editor.addEventListener('input', validateRealTime);
+
+    function updateCursor() {
+      const val = editor.value;
+      const idx = editor.selectionStart;
+      const lines = val.substring(0, idx).split('\n');
+      const line = lines.length;
+      const col = lines[lines.length-1].length + 1;
+      cursorPos.textContent = `行 ${line}, 列 ${col}`;
+    }
+
+    // 实时校验
+    function validateRealTime() {
+      try {
+        JSON.parse(editor.value);
+        jsonStatus.innerHTML = '✅ JSON 有效';
+        jsonStatus.style.color = '#a0e0a0';
+      } catch (e) {
+        jsonStatus.innerHTML = `❌ ${e.message}`;
+        jsonStatus.style.color = '#ffa0a0';
+      }
+    }
+
+    function formatJSON() {
+      try {
+        const json = JSON.parse(editor.value);
+        editor.value = JSON.stringify(json, null, 2);
+        validateRealTime();
+      } catch (e) {
+        alert('格式化失败：' + e.message);
+      }
+    }
+
+    function compressJSON() {
+      try {
+        const json = JSON.parse(editor.value);
+        editor.value = JSON.stringify(json);
+        validateRealTime();
+      } catch (e) {
+        alert('压缩失败：' + e.message);
+      }
+    }
+
+    function validateJSON() {
+      try {
+        JSON.parse(editor.value);
+        alert('✅ JSON 格式完全正确');
+      } catch (e) {
+        alert('❌ 错误：' + e.message);
+      }
+    }
+
+    // 初始化校验
+    validateRealTime();
+    updateCursor();
+  </script>
+</body>
+</html>

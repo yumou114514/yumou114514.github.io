@@ -1,0 +1,35 @@
+name: Sync from Codeberg
+
+on:
+  workflow_dispatch
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@main
+        with:
+          token: ${{ secrets.PAT }}
+          fetch-depth: 0
+      
+      - name: Sync from Codeberg
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 重新设置 origin 的 URL，强制使用 PAT
+          git remote set-url origin https://${{ secrets.PAT }}@github.com/yumou114514/yumou114514.github.io.git
+          
+          git remote add codeberg https://codeberg.org/yumou/yumou114514.github.io.git
+          git fetch codeberg main
+          git merge codeberg/main --allow-unrelated-histories --no-edit || true
+          
+          if ! git diff --cached --quiet; then
+            git checkout --theirs .
+            git add .
+            git commit -m "Auto-resolve: prefer Codeberg"
+          fi
+          
+          git push origin main

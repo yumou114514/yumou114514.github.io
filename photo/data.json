@@ -1,0 +1,36 @@
+
+[
+    {
+        "type": "image",
+        "imgUrl": "./photo/1.png"
+    },
+    {
+    "type": "image",
+    "imgUrl": "./photo/2.jpeg"
+},
+{
+    "type": "image",
+    "imgUrl": "./photo/3.jpeg"
+},
+{
+    "type": "image",
+    "imgUrl": "./photo/4.jpeg"
+},
+{
+    "type": "image",
+    "imgUrl": "./photo/5.jpeg"
+},
+{
+    "type": "image",
+    "imgUrl": "./photo/6.jpeg"
+},
+{
+    "type": "image",
+    "imgUrl": "./photo/7.jpeg"
+},
+
+    {
+        "type": "video",
+        "videoUrl": "about:blank"
+    }
+]

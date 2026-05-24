@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分享</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fb;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #1e293b;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .media-preview {
+            width: 100%;
+            height: 240px;
+            background: #e2e8f0;
+            object-fit: cover;
+            display: block;
+        }
+
+        video.media-preview {
+            object-fit: cover;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 点击查看</h1>
+        <div class="grid" id="galleryGrid"></div>
+        <div class="footer">点击下载</div>
+    </div>
+
+    <script>
+        async function loadGallery() {
+            try {
+                const response = await fetch('data.json');
+                const items = await response.json();
+                
+                const grid = document.getElementById('galleryGrid');
+                grid.innerHTML = items.map(item => renderCard(item)).join('');
+            } catch (error) {
+                console.error('加载失败:', error);
+                document.getElementById('galleryGrid').innerHTML = 
+                    '<p style="text-align:center;color:red;">加载失败，请确保 data.json 存在</p>';
+            }
+        }
+
+        function renderCard(item) {
+            if (item.type === 'image') {
+                // 图片：点击直接下载
+                return `
+                    <div class="card" onclick="downloadImage('${item.imgUrl}', '${item.fileName || getFileNameFromUrl(item.imgUrl)}')">
+                        <img class="media-preview" src="${item.imgUrl}" alt="${item.title || '图片'}">
+                    </div>
+                `;
+            } else if (item.type === 'video') {
+                // 视频：点击直接打开链接（无封面）
+                const videoUrl = item.videoUrl || item.openLink || item.videoWatchUrl;
+                return `
+                    <div class="card" onclick="window.open('${videoUrl}', '_blank')">
+                        <div class="media-preview" style="background:#1e293b; display:flex; align-items:center; justify-content:center; color:white;">🔗 我是一个链接</div>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function getFileNameFromUrl(url) {
+            try {
+                const segments = url.split('/');
+                let filename = segments.pop() || 'image';
+                if (!filename.includes('.')) filename += '.jpg';
+                return filename;
+            } catch {
+                return 'image.jpg';
+            }
+        }
+
+        function downloadImage(url, fileName) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const link = document.createElement('a');
+                    const objectUrl = URL.createObjectURL(blob);
+                    link.href = objectUrl;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(objectUrl);
+                })
+                .catch(() => {
+                    window.open(url, '_blank');
+                });
+        }
+
+        loadGallery();
+    </script>
+</body>
+</html>

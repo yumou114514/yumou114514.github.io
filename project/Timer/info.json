@@ -1,0 +1,13 @@
+{
+  "name": "Timer",
+  "author": "Coldbox",
+  "Version": 1.1,
+  "platforms": [
+    "Windows",
+    "Android",
+    "Web"
+  ],
+  "Websites": {
+    
+  }
+}
