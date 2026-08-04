@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CB应用商店</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        /* 顶部标题栏 */
+        .header {
+            background: linear-gradient(135deg, #0078d4, #005a9e);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0078d4;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .logo-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        /* 字母导航区域 */
+        .letters-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background-color: #0078d4;
+            border-radius: 2px;
+        }
+        
+        .letters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .letter-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            font-size: 22px;
+            font-weight: bold;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .letter-btn:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .letter-btn.active {
+            background-color: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
+        
+        /* 应用列表区域 */
+        .apps-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        }
+        
+        .apps-section.hidden {
+            display: none;
+        }
+        
+        .apps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .back-to-letters {
+            background: none;
+            border: none;
+            color: #0078d4;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .back-to-letters:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .current-letter {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0078d4;
+            text-transform: uppercase;
+        }
+        
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .app-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: #0078d4;
+        }
+        
+        .app-icon-container {
+            width: 100%;
+            height: 120px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #6c757d;
+            overflow: hidden;
+        }
+        
+        .app-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            line-height: 1.3;
+        }
+        
+        .app-author {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .app-platforms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: auto;
+        }
+        
+        .platform-tag {
+            background: #e7f3ff;
+            color: #0078d4;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        /* 加载和空状态 */
+        .loading, .empty-state {
+            padding: 50px 20px;
+            text-align: center;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0078d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+            margin-top: 50px;
+            background: white;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .letters-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+                gap: 10px;
+            }
+            
+            .letter-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0 15px;
+            }
+            
+            .letters-section, .apps-section {
+                padding: 20px 15px;
+            }
+            
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 12px;
+            }
+            
+            .app-icon-container {
+                height: 100px;
+            }
+            
+            .app-icon {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部标题栏 -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">CB</div>
+                <div class="logo-text">
+                    <h1>CB应用商店</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 字母导航区域 -->
+        <div class="letters-section" id="letters-section">
+            <div class="section-title">按字母浏览应用</div>
+            <div class="letters-grid" id="letters-grid">
+                <!-- 字母按钮会动态生成 -->
+            </div>
+        </div>
+
+        <!-- 应用列表区域 -->
+        <div class="apps-section hidden" id="apps-section">
+            <div class="apps-header">
+                <button class="back-to-letters" id="back-to-letters">
+                    <span>←</span> 返回导航
+                </button>
+                <div class="current-letter" id="current-letter">A</div>
+            </div>
+            
+            <div class="apps-grid" id="apps-grid">
+                <!-- 应用卡片会动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <p>© 2026 CB应用商店 </p>
+    </div>
+
+    <script>
+    // 字母映射表 - 用于临时修正错误的文件映射
+    const letterMapping = {
+        'A': 'a',
+        'B': 'b',
+        'C': 'c',
+        'D': 'd',
+        'E': 'e',
+        'F': 'f',  // 如果 F 实际上对应 t.json，可以在这里修改
+        'G': 'g',
+        'H': 'h',
+        'I': 'i',
+        'J': 'j',
+        'K': 'k',
+        'L': 'l',
+        'M': 'm',
+        'N': 'n',
+        'O': 'o',
+        'P': 'p',
+        'Q': 'q',
+        'R': 'r',
+        'S': 's',
+        'T': 't',  // 如果 T 实际上对应 f.json，可以在这里修改
+        'U': 'u',
+        'V': 'v',
+        'W': 'w',
+        'X': 'x',
+        'Y': 'y',
+        'Z': 'z'
+    };
+
+    // 初始化字母网格
+    function initLetters() {
+        const lettersGrid = document.getElementById('letters-grid');
+        lettersGrid.innerHTML = '';
+        
+        // 生成A-Z的字母按钮
+        for (let i = 65; i <= 90; i++) {
+            const letter = String.fromCharCode(i);
+            const letterBtn = document.createElement('button');
+            letterBtn.className = 'letter-btn';
+            letterBtn.textContent = letter;
+            letterBtn.dataset.letter = letter;
+            
+            letterBtn.addEventListener('click', function() {
+                const letterToLoad = this.dataset.letter;
+                console.log('点击字母:', letterToLoad);
+                loadAppsByLetter(letterToLoad);
+            });
+            
+            lettersGrid.appendChild(letterBtn);
+        }
+    }
+    
+    // 根据字母加载应用
+    async function loadAppsByLetter(letter) {
+        console.log('正在加载:', letter);
+        
+        const lettersSection = document.getElementById('letters-section');
+        const appsSection = document.getElementById('apps-section');
+        const appsGrid = document.getElementById('apps-grid');
+        const currentLetter = document.getElementById('current-letter');
+        
+        // 切换显示区域
+        lettersSection.style.display = 'none';
+        appsSection.classList.remove('hidden');
+        currentLetter.textContent = letter;
+        
+        // 显示加载状态
+        appsGrid.innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>正在加载应用列表...</p>
+            </div>
+        `;
+        
+        try {
+            // 使用映射表获取实际的文件名
+            const mappedLetter = letterMapping[letter] || letter.toLowerCase();
+            const jsonPath = `ProjectList/${mappedLetter}.json`;
+            console.log('请求路径:', jsonPath);
+            
+            // 添加时间戳避免缓存
+            const response = await fetch(`${jsonPath}?t=${Date.now()}`);
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    showEmptyApps(letter);
+                } else {
+                    throw new Error(`加载失败: ${response.status}`);
+                }
+                return;
+            }
+            
+            const data = await response.json();
+            console.log('加载到的数据:', data);
+            
+            // 检查apps数组是否为空
+            if (!data.apps || data.apps.length === 0) {
+                showEmptyApps(letter);
+                return;
+            }
+            
+            // 清空应用网格
+            appsGrid.innerHTML = '';
+            
+            // 为每个应用加载详细信息并创建卡片
+            const appPromises = data.apps.map(appName => 
+                loadAppInfo(appName).then(appInfo => createAppCard(appInfo, appName))
+            );
+            
+            // 等待所有应用信息加载完成
+            const appCards = await Promise.allSettled(appPromises);
+            
+            // 添加成功加载的应用卡片
+            appCards.forEach(result => {
+                if (result.status === 'fulfilled' && result.value) {
+                    appsGrid.appendChild(result.value);
+                }
+            });
+            
+            // 如果没有成功加载的应用，显示空状态
+            if (appsGrid.children.length === 0) {
+                showEmptyApps(letter);
+            }
+            
+        } catch (error) {
+            console.error('加载应用列表时出错:', error);
+            showError(`加载应用列表失败: ${error.message}`);
+        }
+    }
+    
+    // 加载单个应用信息
+    async function loadAppInfo(appName) {
+        try {
+            // 添加时间戳避免缓存
+            const response = await fetch(`${appName}/info.json?t=${Date.now()}`);
+            
+            if (!response.ok) {
+                throw new Error(`无法加载应用信息: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error(`加载应用 ${appName} 信息失败:`, error);
+            return {
+                name: appName,
+                author: '作者',
+                platforms: []
+            };
+        }
+    }
+    
+    // 创建应用卡片
+    function createAppCard(appInfo, appName) {
+        const appCard = document.createElement('div');
+        appCard.className = 'app-card';
+        
+        // 创建图标容器
+        const iconContainer = document.createElement('div');
+        iconContainer.className = 'app-icon-container';
+        
+        const icon = document.createElement('div');
+        icon.className = 'app-icon';
+        
+        // 尝试加载应用图标
+        const iconImg = document.createElement('img');
+        // 添加时间戳避免缓存
+        iconImg.src = `${appName}/icon.png?t=${Date.now()}`;
+        iconImg.alt = `${appInfo.name} 图标`;
+        iconImg.onerror = () => {
+            icon.innerHTML = appInfo.name.charAt(0).toUpperCase();
+            iconImg.style.display = 'none';
+        };
+        
+        icon.appendChild(iconImg);
+        iconContainer.appendChild(icon);
+        
+        // 创建应用信息区域
+        const appInfoDiv = document.createElement('div');
+        appInfoDiv.className = 'app-info';
+        
+        const name = document.createElement('div');
+        name.className = 'app-name';
+        name.textContent = appInfo.name || appName;
+        
+        const author = document.createElement('div');
+        author.className = 'app-author';
+        author.textContent = appInfo.author || '未知作者';
+        
+        const platforms = document.createElement('div');
+        platforms.className = 'app-platforms';
+        
+        // 添加平台标签
+        if (appInfo.platforms && appInfo.platforms.length > 0) {
+            appInfo.platforms.slice(0, 3).forEach(platform => {
+                const platformTag = document.createElement('span');
+                platformTag.className = 'platform-tag';
+                platformTag.textContent = platform;
+                platforms.appendChild(platformTag);
+            });
+        }
+        
+        appInfoDiv.appendChild(name);
+        appInfoDiv.appendChild(author);
+        appInfoDiv.appendChild(platforms);
+        
+        // 组装卡片
+        appCard.appendChild(iconContainer);
+        appCard.appendChild(appInfoDiv);
+        
+        // 添加点击事件
+        appCard.addEventListener('click', () => {
+            window.location.href = `app.html?app=${encodeURIComponent(appInfo.name || appName)}&path=${encodeURIComponent(appName)}&t=${Date.now()}`;
+        });
+        
+        return appCard;
+    }
+    
+    // 显示空应用状态
+    function showEmptyApps(letter) {
+        const appsGrid = document.getElementById('apps-grid');
+        appsGrid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📁</div>
+                <p>没有找到以 "${letter}" 开头的应用</p>
+                <p style="font-size: 14px; margin-top: 10px;">该字母下暂无应用，试试其他字母</p>
+            </div>
+        `;
+    }
+    
+    // 显示错误信息
+    function showError(message) {
+        const appsGrid = document.getElementById('apps-grid');
+        appsGrid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <p>${message}</p>
+                <p style="font-size: 14px; margin-top: 10px;">请检查网络连接或稍后再试</p>
+            </div>
+        `;
+    }
+    
+    // 返回导航
+    function goBackToLetters() {
+        const lettersSection = document.getElementById('letters-section');
+        const appsSection = document.getElementById('apps-section');
+        
+        lettersSection.style.display = 'block';
+        appsSection.classList.add('hidden');
+    }
+    
+    // 初始化页面
+    function initPage() {
+        // 初始化字母网格
+        initLetters();
+        
+        // 绑定返回按钮事件
+        document.getElementById('back-to-letters').addEventListener('click', goBackToLetters);
+        
+        // 检查URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialLetter = urlParams.get('letter');
+        
+        if (initialLetter && /^[A-Za-z]$/.test(initialLetter)) {
+            loadAppsByLetter(initialLetter.toUpperCase());
+        }
+    }
+    
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', initPage);
+</script>
+</body>
+</html>
