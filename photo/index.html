@@ -3,76 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分享</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fb;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 32px;
-            color: #1e293b;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-        }
-
-        .card {
-            background: white;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-        }
-
-        .media-preview {
-            width: 100%;
-            height: 240px;
-            background: #e2e8f0;
-            object-fit: cover;
-            display: block;
-        }
-
-        video.media-preview {
-            object-fit: cover;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 48px;
-            color: #94a3b8;
-            font-size: 0.8rem;
-        }
-    </style>
+    <title>照片 - 羽某博客</title>
+    <link rel="icon" href="../icon.jpeg">
+    <link rel="stylesheet" href="../res/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>📸 点击查看</h1>
-        <div class="grid" id="galleryGrid"></div>
-        <div class="footer">点击下载</div>
-    </div>
+    <!-- 顶部导航 -->
+    <header class="navbar">
+        <div class="container">
+            <nav class="nav-links">
+                <a href="../index.html">首页</a>
+                <a href="../project/index.html">项目</a>
+                <a href="../app/index.html">应用</a>
+                <a href="#" class="active">照片</a>
+                <a href="../article/index.html">文章</a>
+                <a href="../ai.html">AI</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container">
+        <h1>照片</h1>
+        <div class="gallery-grid" id="galleryGrid">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>正在加载照片...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        © 2026 羽某博客 · 点击图片下载
+    </footer>
 
     <script>
         async function loadGallery() {
@@ -85,24 +49,22 @@
             } catch (error) {
                 console.error('加载失败:', error);
                 document.getElementById('galleryGrid').innerHTML = 
-                    '<p style="text-align:center;color:red;">加载失败，请确保 data.json 存在</p>';
+                    '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>加载失败，请稍后重试</p></div>';
             }
         }
 
         function renderCard(item) {
             if (item.type === 'image') {
-                // 图片：点击直接下载
                 return `
-                    <div class="card" onclick="downloadImage('${item.imgUrl}', '${item.fileName || getFileNameFromUrl(item.imgUrl)}')">
-                        <img class="media-preview" src="${item.imgUrl}" alt="${item.title || '图片'}">
+                    <div class="gallery-card" onclick="downloadImage('${item.imgUrl}', '${item.fileName || getFileNameFromUrl(item.imgUrl)}')">
+                        <img class="gallery-media" src="${item.imgUrl}" alt="${item.title || '图片'}">
                     </div>
                 `;
             } else if (item.type === 'video') {
-                // 视频：点击直接打开链接（无封面）
                 const videoUrl = item.videoUrl || item.openLink || item.videoWatchUrl;
                 return `
-                    <div class="card" onclick="window.open('${videoUrl}', '_blank')">
-                        <div class="media-preview" style="background:#1e293b; display:flex; align-items:center; justify-content:center; color:white;">🔗 我是一个链接</div>
+                    <div class="gallery-card" onclick="window.open('${videoUrl}', '_blank')">
+                        <div class="gallery-placeholder">🔗 视频链接</div>
                     </div>
                 `;
             }

@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>acg</title>
+    <title>ACG - 羽某博客</title>
+    <link rel="icon" href="icon.jpeg">
+    <link rel="stylesheet" href="res/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             width: 100vw;
             height: 100vh;
             overflow: hidden;
             background: #000;
+            margin: 0;
+            padding: 0;
         }
 
-        .fullscreen {
+        .acg-container {
             width: 100%;
             height: 100%;
             display: flex;
@@ -28,17 +26,37 @@
             cursor: pointer;
         }
 
-        .fullscreen img {
+        .acg-container img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             display: block;
         }
+
+        .acg-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: var(--text-sm);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .acg-container:hover .acg-hint {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
-    <div class="fullscreen" id="fullscreen">
-        <img id="mainImage" alt="图片">
+    <div class="acg-container" id="fullscreen">
+        <img id="mainImage" alt="ACG图片">
+        <div class="acg-hint">点击屏幕切换图片</div>
     </div>
 
     <script>
@@ -49,9 +67,11 @@
             const url = `${API_URL}?t=${Date.now()}`;
             img.src = url;
         }
-    document.addEventListener('click', function() {
-        loadImage();
-    });
+        
+        document.addEventListener('click', function() {
+            loadImage();
+        });
+        
         loadImage();
     </script>
 </body>
