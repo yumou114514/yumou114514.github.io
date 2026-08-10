@@ -1,13 +1,13 @@
 # YuMou-Pages
 
 个人网站与项目托管平台。
-
-[English](readme/readme_en.md) | [简体中文](readme/readme_zh-cn.md)
+由AI编写。
+[English](readme/readme_en.md) | [简体中文](readme.md)
 
 ## 仓库
 
-- [Codeberg (主仓库)](https://codeberg.org/yumou/yumou114514.github.io)
-- [GitHub (镜像)](https://github.com/yumou114514/yumou114514.github.io)
+- [Codeberg](https://codeberg.org/yumou/yumou114514.github.io)
+- [GitHub](https://github.com/yumou114514/yumou114514.github.io)
 
 ## 功能模块
 
@@ -19,7 +19,6 @@
 | 照片 | `/photo/` | 照片画廊，点击查看/下载 |
 | 文章 | `/article/` | 技术文档 |
 | AI聊天 | `/ai.html` | DeepSeek AI 对话 |
-| ACG | `/acg.html` | 随机动漫图片 |
 
 ## 技术栈
 

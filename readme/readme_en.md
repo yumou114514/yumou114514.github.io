@@ -14,7 +14,6 @@ A personal website built with GitHub Pages, featuring:
 - **Photo Gallery** - Image viewing and downloading
 - **Articles** - Technical documentation
 - **AI Chat** - DeepSeek API-powered chat interface
-- **ACG** - Random anime images
 
 ## Technical Highlights
 
