@@ -30,28 +30,52 @@
                 <div class="app-logo-icon">CB</div>
                 <div class="app-logo-text">
                     <h1>CB应用商店</h1>
+                    <p>发现和使用优质应用</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="app-search">
+            <input type="text" id="search-input" placeholder="搜索应用名称或描述..." autocomplete="off">
+        </div>
+
+        <!-- 视图切换 -->
+        <div class="app-section-header">
+            <h2 id="section-title">全部应用 <span class="app-count" id="app-count">0</span></h2>
+            <div class="view-toggle">
+                <button id="view-all" class="active">全部</button>
+                <button id="view-letters">按字母</button>
+            </div>
+        </div>
+
+        <!-- 全部应用列表 -->
+        <div id="all-apps-section">
+            <div class="apps-grid" id="all-apps-grid">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在加载应用列表...</p>
                 </div>
             </div>
         </div>
 
         <!-- 字母导航区域 -->
-        <div id="letters-section">
-            <h2>按字母浏览应用</h2>
+        <div id="letters-section" style="display: none;">
             <div class="letters-grid" id="letters-grid">
                 <!-- 字母按钮会动态生成 -->
             </div>
         </div>
 
-        <!-- 应用列表区域 -->
-        <div id="apps-section" style="display: none;">
+        <!-- 按字母筛选的应用列表 -->
+        <div id="filtered-apps-section" style="display: none;">
             <div class="flex gap-4 mb-6" style="align-items: center; justify-content: space-between;">
                 <button class="btn btn-outline" id="back-to-letters">
-                    ← 返回导航
+                    ← 返回字母
                 </button>
                 <h2 id="current-letter" style="margin: 0;">A</h2>
             </div>
             
-            <div class="apps-grid" id="apps-grid">
+            <div class="apps-grid" id="filtered-apps-grid">
                 <!-- 应用卡片会动态生成 -->
             </div>
         </div>
@@ -63,122 +87,124 @@
     </footer>
 
     <script>
-    // 字母映射表
-    const letterMapping = {
-        'A': 'a', 'B': 'b', 'C': 'c', 'D': 'd', 'E': 'e', 'F': 'f',
-        'G': 'g', 'H': 'h', 'I': 'i', 'J': 'j', 'K': 'k', 'L': 'l',
-        'M': 'm', 'N': 'n', 'O': 'o', 'P': 'p', 'Q': 'q', 'R': 'r',
-        'S': 's', 'T': 't', 'U': 'u', 'V': 'v', 'W': 'w', 'X': 'x',
-        'Y': 'y', 'Z': 'z'
-    };
+    // 全局状态
+    let allAppsData = [];
+    let currentView = 'all'; // 'all', 'letters', 'filtered'
+
+    // 初始化页面
+    async function initPage() {
+        await loadAllApps();
+        initLetters();
+        initEventListeners();
+        renderAllApps();
+    }
+
+    // 加载所有应用数据
+    async function loadAllApps() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const promises = letters.map(async letter => {
+            try {
+                const response = await fetch(`ProjectList/${letter.toLowerCase()}.json`);
+                if (!response.ok) return [];
+                const data = await response.json();
+                return data.apps || [];
+            } catch (error) {
+                return [];
+            }
+        });
+
+        const results = await Promise.all(promises);
+        allAppsData = results.flat();
+    }
 
     // 初始化字母网格
     function initLetters() {
         const lettersGrid = document.getElementById('letters-grid');
         lettersGrid.innerHTML = '';
         
+        const lettersWithApps = new Set();
+        allAppsData.forEach(app => {
+            const firstChar = app.name.charAt(0).toUpperCase();
+            lettersWithApps.add(firstChar);
+        });
+
         for (let i = 65; i <= 90; i++) {
             const letter = String.fromCharCode(i);
             const letterBtn = document.createElement('button');
             letterBtn.className = 'letter-btn';
+            if (lettersWithApps.has(letter)) {
+                letterBtn.classList.add('has-apps');
+            }
             letterBtn.textContent = letter;
             letterBtn.dataset.letter = letter;
             
             letterBtn.addEventListener('click', function() {
-                const letterToLoad = this.dataset.letter;
-                loadAppsByLetter(letterToLoad);
+                filterAppsByLetter(letter);
             });
             
             lettersGrid.appendChild(letterBtn);
         }
     }
-    
-    // 根据字母加载应用
-    async function loadAppsByLetter(letter) {
+
+    // 渲染全部应用
+    function renderAllApps() {
+        const grid = document.getElementById('all-apps-grid');
+        const countEl = document.getElementById('app-count');
+        
+        if (allAppsData.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <p>暂无应用</p>
+                </div>
+            `;
+            countEl.textContent = '0';
+            return;
+        }
+
+        grid.innerHTML = '';
+        allAppsData.forEach(app => {
+            const card = createAppCard(app);
+            grid.appendChild(card);
+        });
+        countEl.textContent = allAppsData.length;
+    }
+
+    // 按字母筛选应用
+    function filterAppsByLetter(letter) {
+        const filteredApps = allAppsData.filter(app => 
+            app.name.charAt(0).toUpperCase() === letter
+        );
+
         const lettersSection = document.getElementById('letters-section');
-        const appsSection = document.getElementById('apps-section');
-        const appsGrid = document.getElementById('apps-grid');
-        const currentLetter = document.getElementById('current-letter');
-        
+        const filteredSection = document.getElementById('filtered-apps-section');
+        const filteredGrid = document.getElementById('filtered-apps-grid');
+        const currentLetterEl = document.getElementById('current-letter');
+
         lettersSection.style.display = 'none';
-        appsSection.style.display = 'block';
-        currentLetter.textContent = letter;
-        
-        appsGrid.innerHTML = `
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <p>正在加载应用列表...</p>
-            </div>
-        `;
-        
-        try {
-            const mappedLetter = letterMapping[letter] || letter.toLowerCase();
-            const jsonPath = `ProjectList/${mappedLetter}.json`;
-            
-            const response = await fetch(`${jsonPath}?t=${Date.now()}`);
-            
-            if (!response.ok) {
-                if (response.status === 404) {
-                    showEmptyApps(letter);
-                } else {
-                    throw new Error(`加载失败: ${response.status}`);
-                }
-                return;
-            }
-            
-            const data = await response.json();
-            
-            if (!data.apps || data.apps.length === 0) {
-                showEmptyApps(letter);
-                return;
-            }
-            
-            appsGrid.innerHTML = '';
-            
-            const appPromises = data.apps.map(appName => 
-                loadAppInfo(appName).then(appInfo => createAppCard(appInfo, appName))
-            );
-            
-            const appCards = await Promise.allSettled(appPromises);
-            
-            appCards.forEach(result => {
-                if (result.status === 'fulfilled' && result.value) {
-                    appsGrid.appendChild(result.value);
-                }
+        filteredSection.style.display = 'block';
+        currentLetterEl.textContent = letter;
+
+        filteredGrid.innerHTML = '';
+        if (filteredApps.length === 0) {
+            filteredGrid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📁</div>
+                    <p>没有找到以 "${letter}" 开头的应用</p>
+                </div>
+            `;
+        } else {
+            filteredApps.forEach(app => {
+                const card = createAppCard(app);
+                filteredGrid.appendChild(card);
             });
-            
-            if (appsGrid.children.length === 0) {
-                showEmptyApps(letter);
-            }
-            
-        } catch (error) {
-            console.error('加载应用列表时出错:', error);
-            showError(`加载应用列表失败: ${error.message}`);
         }
+
+        currentView = 'filtered';
     }
-    
-    // 加载单个应用信息
-    async function loadAppInfo(appName) {
-        try {
-            const response = await fetch(`${appName}/info.json?t=${Date.now()}`);
-            
-            if (!response.ok) {
-                throw new Error(`无法加载应用信息: ${response.status}`);
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error(`加载应用 ${appName} 信息失败:`, error);
-            return {
-                name: appName,
-                author: '作者',
-                platforms: []
-            };
-        }
-    }
-    
+
     // 创建应用卡片
-    function createAppCard(appInfo, appName) {
+    function createAppCard(appInfo) {
         const appCard = document.createElement('div');
         appCard.className = 'app-card';
         
@@ -189,7 +215,7 @@
         icon.className = 'app-icon';
         
         const iconImg = document.createElement('img');
-        iconImg.src = `${appName}/icon.png?t=${Date.now()}`;
+        iconImg.src = `${appInfo.path}/icon.png?t=${Date.now()}`;
         iconImg.alt = `${appInfo.name} 图标`;
         iconImg.onerror = () => {
             icon.innerHTML = appInfo.name.charAt(0).toUpperCase();
@@ -204,7 +230,11 @@
         
         const name = document.createElement('div');
         name.className = 'app-name';
-        name.textContent = appInfo.name || appName;
+        name.textContent = appInfo.name;
+        
+        const description = document.createElement('div');
+        description.className = 'app-card-desc';
+        description.textContent = appInfo.description || '暂无描述';
         
         const author = document.createElement('div');
         author.className = 'app-author';
@@ -223,6 +253,7 @@
         }
         
         appInfoDiv.appendChild(name);
+        appInfoDiv.appendChild(description);
         appInfoDiv.appendChild(author);
         appInfoDiv.appendChild(platforms);
         
@@ -230,58 +261,89 @@
         appCard.appendChild(appInfoDiv);
         
         appCard.addEventListener('click', () => {
-            window.location.href = `app.html?app=${encodeURIComponent(appInfo.name || appName)}&path=${encodeURIComponent(appName)}&t=${Date.now()}`;
+            window.location.href = `app.html?app=${encodeURIComponent(appInfo.name)}&path=${encodeURIComponent(appInfo.path)}&t=${Date.now()}`;
         });
         
         return appCard;
     }
-    
-    // 显示空应用状态
-    function showEmptyApps(letter) {
-        const appsGrid = document.getElementById('apps-grid');
-        appsGrid.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📁</div>
-                <p>没有找到以 "${letter}" 开头的应用</p>
-                <p style="font-size: var(--text-sm); margin-top: var(--space-3);">该字母下暂无应用，试试其他字母</p>
-            </div>
-        `;
-    }
-    
-    // 显示错误信息
-    function showError(message) {
-        const appsGrid = document.getElementById('apps-grid');
-        appsGrid.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">⚠️</div>
-                <p>${message}</p>
-                <p style="font-size: var(--text-sm); margin-top: var(--space-3);">请检查网络连接或稍后再试</p>
-            </div>
-        `;
-    }
-    
-    // 返回导航
-    function goBackToLetters() {
-        const lettersSection = document.getElementById('letters-section');
-        const appsSection = document.getElementById('apps-section');
+
+    // 搜索功能
+    function handleSearch(query) {
+        const grid = document.getElementById('all-apps-grid');
+        const countEl = document.getElementById('app-count');
         
-        lettersSection.style.display = 'block';
-        appsSection.style.display = 'none';
-    }
-    
-    // 初始化页面
-    function initPage() {
-        initLetters();
-        document.getElementById('back-to-letters').addEventListener('click', goBackToLetters);
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialLetter = urlParams.get('letter');
-        
-        if (initialLetter && /^[A-Za-z]$/.test(initialLetter)) {
-            loadAppsByLetter(initialLetter.toUpperCase());
+        if (!query.trim()) {
+            renderAllApps();
+            return;
+        }
+
+        const lowerQuery = query.toLowerCase();
+        const filteredApps = allAppsData.filter(app => 
+            app.name.toLowerCase().includes(lowerQuery) ||
+            (app.description && app.description.toLowerCase().includes(lowerQuery)) ||
+            (app.author && app.author.toLowerCase().includes(lowerQuery))
+        );
+
+        grid.innerHTML = '';
+        if (filteredApps.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔍</div>
+                    <p>没有找到匹配的应用</p>
+                </div>
+            `;
+            countEl.textContent = '0';
+        } else {
+            filteredApps.forEach(app => {
+                const card = createAppCard(app);
+                grid.appendChild(card);
+            });
+            countEl.textContent = filteredApps.length;
         }
     }
-    
+
+    // 初始化事件监听
+    function initEventListeners() {
+        // 搜索框
+        const searchInput = document.getElementById('search-input');
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                handleSearch(e.target.value);
+            }, 300);
+        });
+
+        // 视图切换
+        document.getElementById('view-all').addEventListener('click', function() {
+            currentView = 'all';
+            document.getElementById('all-apps-section').style.display = 'block';
+            document.getElementById('letters-section').style.display = 'none';
+            document.getElementById('filtered-apps-section').style.display = 'none';
+            document.getElementById('section-title').innerHTML = `全部应用 <span class="app-count" id="app-count">${allAppsData.length}</span>`;
+            this.classList.add('active');
+            document.getElementById('view-letters').classList.remove('active');
+            renderAllApps();
+        });
+
+        document.getElementById('view-letters').addEventListener('click', function() {
+            currentView = 'letters';
+            document.getElementById('all-apps-section').style.display = 'none';
+            document.getElementById('letters-section').style.display = 'block';
+            document.getElementById('filtered-apps-section').style.display = 'none';
+            document.getElementById('section-title').innerHTML = '按字母浏览';
+            this.classList.add('active');
+            document.getElementById('view-all').classList.remove('active');
+        });
+
+        // 返回字母导航
+        document.getElementById('back-to-letters').addEventListener('click', function() {
+            document.getElementById('letters-section').style.display = 'block';
+            document.getElementById('filtered-apps-section').style.display = 'none';
+        });
+    }
+
+    // 页面加载完成后执行
     document.addEventListener('DOMContentLoaded', initPage);
     </script>
 </body>

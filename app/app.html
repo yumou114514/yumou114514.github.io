@@ -27,6 +27,7 @@
             </div>
             <div class="app-detail-info">
                 <h1 id="app-name">名称</h1>
+                <p class="app-detail-desc" id="app-description">加载中...</p>
                 <p id="app-author" style="color: var(--color-secondary); margin-bottom: var(--space-3);">作者:</p>
                 <span class="app-version-badge" id="app-version">版本:</span>
                 
@@ -83,12 +84,13 @@
             const appPath = getAppPathFromURL();
             
             document.getElementById('app-name').textContent = '加载中...';
+            document.getElementById('app-description').textContent = '加载中...';
             document.getElementById('app-author').textContent = '作者：加载中...';
             document.getElementById('app-version').textContent = '版本：加载中';
             document.getElementById('title-app-name').textContent = '正在加载应用信息...';
             
             try {
-                const response = await fetch(`${appPath}/info.json`);
+                const response = await fetch(`${appPath}/info.json?t=${Date.now()}`);
                 
                 if (!response.ok) {
                     throw new Error(`无法加载应用信息: ${response.status}`);
@@ -108,8 +110,9 @@
         function updateAppInfoDisplay(appInfo, appPath) {
             document.getElementById('title-app-name').textContent = appInfo.name;
             document.getElementById('app-name').textContent = appInfo.name;
+            document.getElementById('app-description').textContent = appInfo.description || '暂无描述';
             document.getElementById('app-author').textContent = `作者：${appInfo.author}`;
-            document.getElementById('app-version').textContent = `版本 ${appInfo.Version}`;
+            document.getElementById('app-version').textContent = `版本 ${appInfo.version}`;
             
             const platformsContainer = document.getElementById('platforms-container');
             platformsContainer.innerHTML = '';
@@ -124,14 +127,14 @@
             const authorWebsite = document.getElementById('author-website');
             const projectWebsite = document.getElementById('project-website');
             
-            if (appInfo.Websites && appInfo.Websites.Auhtor) {
-                authorWebsite.innerHTML = `<a href="https://${appInfo.Websites.Auhtor}" target="_blank">${appInfo.Websites.Auhtor}</a>`;
+            if (appInfo.websites && appInfo.websites.author) {
+                authorWebsite.innerHTML = `<a href="https://${appInfo.websites.author}" target="_blank">${appInfo.websites.author}</a>`;
             } else {
                 authorWebsite.textContent = '无';
             }
             
-            if (appInfo.Websites && appInfo.Websites.Project) {
-                projectWebsite.innerHTML = `<a href="https://${appInfo.Websites.Project}" target="_blank">${appInfo.Websites.Project}</a>`;
+            if (appInfo.websites && appInfo.websites.project) {
+                projectWebsite.innerHTML = `<a href="https://${appInfo.websites.project}" target="_blank">${appInfo.websites.project}</a>`;
             } else {
                 projectWebsite.textContent = '无';
             }
@@ -176,12 +179,25 @@
             
             if (appInfo.platforms && appInfo.platforms.length > 0) {
                 appInfo.platforms.forEach(platform => {
+                    const downloadUrl = appInfo.downloads && appInfo.downloads[platform] ? appInfo.downloads[platform] : '';
+                    
                     const downloadBtn = document.createElement('a');
                     downloadBtn.className = 'download-btn';
-                    downloadBtn.href = '#';
+                    
+                    if (downloadUrl) {
+                        downloadBtn.href = downloadUrl;
+                        downloadBtn.target = '_blank';
+                    } else {
+                        downloadBtn.href = '#';
+                        downloadBtn.onclick = (e) => {
+                            e.preventDefault();
+                            alert(`${platform} 版本的下载链接暂未提供`);
+                        };
+                    }
+                    
                     downloadBtn.innerHTML = `
                         <div class="platform-name">${platform}</div>
-                        <div class="platform-desc">下载 ${platform} 版本</div>
+                        <div class="platform-desc">${downloadUrl ? '点击下载' : '暂未提供'}</div>
                     `;
                     downloadButtons.appendChild(downloadBtn);
                 });

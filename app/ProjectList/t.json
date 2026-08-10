@@ -1,5 +1,21 @@
 {
   "apps": [
-    "Timer"
+    {
+      "name": "Timer",
+      "path": "Timer",
+      "description": "跨平台计时器应用",
+      "version": "1.1",
+      "author": "Coldbox",
+      "platforms": ["Windows", "Android", "Web"],
+      "websites": {
+        "author": "",
+        "project": ""
+      },
+      "downloads": {
+        "Windows": "",
+        "Android": "",
+        "Web": "https://huh114514.github.io/Yumou-Pages/Project/Timer/Web/"
+      }
+    }
   ]
 }

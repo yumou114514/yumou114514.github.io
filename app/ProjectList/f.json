@@ -1,5 +1,19 @@
 {
   "apps": [
-    "FJE Web Json Editor"
+    {
+      "name": "FJE Web Json Editor",
+      "path": "FJE Web Json Editor",
+      "description": "全画幅JSON编辑器，全屏无浪费",
+      "version": "1.0",
+      "author": "Coldbox",
+      "platforms": ["Web"],
+      "websites": {
+        "author": "huh114514.github.io/Yumou-Pages/",
+        "project": ""
+      },
+      "downloads": {
+        "Web": ""
+      }
+    }
   ]
 }
